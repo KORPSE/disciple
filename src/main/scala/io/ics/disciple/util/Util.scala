@@ -1,6 +1,6 @@
-package io.ics.souce.util
+package io.k0rp53.disciple.util
 
-import io.ics.souce.dep._
+import io.ics.disciple.dep._
 
 import scala.reflect.ClassTag
 

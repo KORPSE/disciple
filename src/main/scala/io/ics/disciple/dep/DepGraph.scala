@@ -1,8 +1,7 @@
-package io.ics.souce.dep
+package io.k0rp53.disciple.dep
 
-import io.ics.souce.injector.Injector
-import io.ics.souce.util.Util._
-import io.ics.souce.util.{HList, HNil, _}
+import io.k0rp53.disciple.injector.Injector
+import io.k0rp53.disciple.util.Util._
 
 import scala.collection.immutable.ListSet
 import scala.reflect.ClassTag
@@ -13,13 +12,7 @@ case class DepGraph (map: Map[DepId[_], Dep[_]]) {
   def apply[R: ClassTag]: R = getResult(CTId(classTag[R]))
   def apply[R: ClassTag](name: Symbol): R = getResult(NamedId(name, classTag[R]))
 
-  private def keysToHlist(seq: Iterable[DepId[_]]): HList = {
-    seq.foldLeft(HNil: HList) {
-      case (hList, id) => id :: hList
-    }
-  }
-
-  private def findCycleDfs(visited: ListSet[DepId[_]], cts: HList): Option[List[DepId[_]]] =
+  private def findCycleDfs(visited: ListSet[DepId[_]], cts: List[DepId[_]]): Option[List[DepId[_]]] =
     cts match {
       case (id: DepId[_]) :: tail =>
         if (visited contains id) Some(id :: visited.toList)
@@ -36,8 +29,8 @@ case class DepGraph (map: Map[DepId[_], Dep[_]]) {
 
   private def getResult[R](id: DepId[R]): R = {
     map.get(id) match {
-      case Some(Dep(injector: Injector[_], depCts)) =>
-        injector(depCts, this).asInstanceOf[R]
+      case Some(Dep(injector: Injector[_], depIds)) =>
+        injector(depIds, this).asInstanceOf[R]
       case _ =>
         throw new IllegalStateException(s"Not found binding for $id")
     }
@@ -45,7 +38,7 @@ case class DepGraph (map: Map[DepId[_], Dep[_]]) {
 
   //test dep graph for correctness
   if (map.nonEmpty) {
-    findCycleDfs(ListSet.empty, keysToHlist(map.keys)) foreach {
+    findCycleDfs(ListSet.empty, map.keys.toList) foreach {
       depList => throw new IllegalStateException(s"Dependency graph contains cyclic dependency: ( ${depList.mkString(" <- ")} )")
     }
   } else {

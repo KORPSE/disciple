@@ -38,18 +38,57 @@ class UsageExample extends FlatSpec with Matchers {
       private val carModule = Module().
         bind(Car("Ford", "Focus", dirty = true))
 
-      val dep = servicesModule combine driverModule combine carModule build()
+      val binding = servicesModule combine driverModule combine carModule build()
     }
 
     import Bindings._
 
-    val services = dep[CarServices]
+    val services = binding[CarServices]
     val car = services.getNewWashedCar
-    val driver = dep[Driver]('Jack)
+    val driver = binding[Driver]('Jack)
 
     car.dirty shouldBe false
     driver.info.name shouldBe "Jack"
     println(car)
   }
 
+  "Example from README.md" should "works correctly" in {
+    case class User(name: String)
+
+    class UserService(val admin: User) {
+      def getUser(name: String) = User(name)
+    }
+
+    // Notice: Factory methods are not required, but it allows to use more compact form to pass constructor as a function
+    object UserService {
+      def getInstance(admin: User) = new UserService(admin)
+    }
+
+    class UserController(service: UserService) {
+      def renderUser(name: String): String = {
+        val user = service.getUser(name)
+        s"User is $user"
+      }
+    }
+
+    object UserController {
+      def getInstance(service: UserService) = new UserController(service)
+    }
+
+    object Bindings {
+      val binding = Module().
+        bind(UserController.getInstance _).singleton.
+        bindNamed(Some('admin))(UserService.getInstance _).singleton.
+        bind(User("Admin")).byName('admin).
+        bind(User("Jack")).byName('customer).
+        build()
+    }
+
+    import Bindings._
+
+    println(binding[User]('customer)) // user with id 'customer' is Jack
+    println(binding[UserService].admin) // service's admin is User(Admin)
+    println(binding[UserController].renderUser("George")) // controller has it's dependency
+
+  }
 }

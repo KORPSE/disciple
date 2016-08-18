@@ -1,25 +1,24 @@
 package io.ics.souce.injector
 
 import io.ics.souce.dep._
-import io.ics.souce.util._
 
 import scala.reflect.ClassTag
 
 case class Injector0[T](inj: () => T) extends Injector[T] {
-  override def apply(argTags: HList, cm: DepGraph): T = inj()
+  override def apply(depIds: List[DepId[_]], cm: DepGraph): T = inj()
 }
 
 case class Injector1[T, P1: ClassTag](inj: P1 => T) extends Injector[T] {
-  override def apply(argTags: HList, cm: DepGraph): T = argTags match {
-    case (id1: DepId[P1]) :: HNil =>
+  override def apply(argTags: List[DepId[_]], cm: DepGraph): T = argTags match {
+    case (id1: DepId[P1]) :: Nil =>
       inj(dep(id1, cm))
     case _ => throw new IllegalArgumentException
   }
 }
 
 [1..21#case class Injector2[T, P##1: ClassTag, [#P2: ClassTag#]](inj: (P##1, [#P2#]) => T) extends Injector[T] {
-  override def apply(argTags: HList, cm: DepGraph): T = argTags match {
-    case (id##1: DepId[P##1]) :: [#(id2: DepId[P2])# :: ] :: HNil =>
+  override def apply(argTags: List[DepId[_]], cm: DepGraph): T = argTags match {
+    case (id##1: DepId[P##1]) :: [#(id2: DepId[P2])# :: ] :: Nil =>
       inj(dep(id##1, cm), [#dep(id2, cm)#])
     case _ => throw new IllegalArgumentException
   }

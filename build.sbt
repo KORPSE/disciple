@@ -13,3 +13,5 @@ sourceManaged in Compile := baseDirectory.value / "src_managed"
 managedSourceDirectories in Compile += baseDirectory.value / "src_managed"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+
+scalacOptions in ThisBuild ++= Seq("-feature")

@@ -1,21 +1,17 @@
 package io.ics.souce.module
 
-import scala.reflect.ClassTag
-
 import io.ics.souce.dep._
-
-import io.ics.souce.util._
 
 import io.ics.souce.util.Util._
 
 import io.ics.souce.injector._
 
 trait BindNamedBoilerplate {
-  protected def deps: HList
+  protected def deps: List[(DepId[_], Dep[_])]
 
   def bindNamed[T: CT, P1: CT](name1: Option[Symbol])(f: P1 => T) =
-    Module(CTId(classTag[T]) -> Dep(Injector1(f), getId[P1](name1) :: HNil) :: deps)
+    Module(CTId(classTag[T]) -> Dep(Injector1(f), getId[P1](name1) :: Nil) :: deps)
   [1..21#def bindNamed[T: CT, P##1: CT, [#P2: CT#]](name##1: Option[Symbol], [#name2: Option[Symbol]#])(f: (P##1, [#P2#]) => T) =
-    Module(CTId(classTag[T]) -> Dep(Injector2(f), getId[P##1](name##1) :: [#getId[P2](name2)# :: ] :: HNil) :: deps)#
+    Module(CTId(classTag[T]) -> Dep(Injector2(f), getId[P##1](name##1) :: [#getId[P2](name2)# :: ] :: Nil) :: deps)#
   ]
 }
