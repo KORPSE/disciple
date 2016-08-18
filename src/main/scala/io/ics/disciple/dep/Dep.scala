@@ -1,6 +1,5 @@
-package io.k0rp53.disciple.dep
+package io.ics.disciple.dep
 
-import io.k0rp53.disciple.injector.Injector
-import io.k0rp53.disciple.util.HList
+import io.ics.disciple.injector.Injector
 
 case class Dep[R](f: Injector[R], depCts: List[DepId[_]])

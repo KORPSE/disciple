@@ -1,4 +1,4 @@
-package io.k0rp53.disciple.util
+package io.ics.disciple.util
 
 import io.ics.disciple.dep._
 

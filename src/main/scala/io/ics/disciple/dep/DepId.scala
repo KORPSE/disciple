@@ -1,4 +1,4 @@
-package io.k0rp53.disciple.dep
+package io.ics.disciple.dep
 
 import scala.reflect.ClassTag
 

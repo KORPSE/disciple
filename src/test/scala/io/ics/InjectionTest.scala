@@ -1,6 +1,6 @@
 package io.ics
 
-import io.ics.souce.module.Module
+import io.ics.disciple.Module
 import org.scalatest._
 
 object TestClasses {

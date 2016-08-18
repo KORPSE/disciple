@@ -1,6 +1,8 @@
-package io.k0rp53.disciple
+package io.ics.disciple
 
+import io.ics.disciple.dep._
 import io.ics.disciple.injector.SingletonInjector
+import io.ics.disciple.module._
 
 case class Module(protected val deps: List[(DepId[_], Dep[_])]) extends BindBoilerplate with BindNamedBoilerplate {
 

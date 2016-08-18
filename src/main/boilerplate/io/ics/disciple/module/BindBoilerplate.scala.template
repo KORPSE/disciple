@@ -1,12 +1,14 @@
-package io.ics.souce.module
+package io.ics.disciple.module
 
 import scala.reflect.ClassTag
 
-import io.ics.souce.dep._
+import io.ics.disciple.Module
 
-import io.ics.souce.util.Util._
+import io.ics.disciple.dep._
 
-import io.ics.souce.injector._
+import io.ics.disciple.util.Util._
+
+import io.ics.disciple.injector._
 
 trait BindBoilerplate {
   protected def deps: List[(DepId[_], Dep[_])]

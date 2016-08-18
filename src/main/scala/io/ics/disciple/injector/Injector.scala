@@ -1,4 +1,4 @@
-package io.k0rp53.disciple.injector
+package io.ics.disciple.injector
 
 import io.ics.disciple.dep._
 

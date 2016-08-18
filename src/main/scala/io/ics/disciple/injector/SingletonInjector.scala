@@ -1,6 +1,6 @@
-package io.k0rp53.disciple.injector
+package io.ics.disciple.injector
 
-import io.ics.disciple.dep.{DepGraph, DepId}
+import io.ics.disciple.dep._
 
 case class SingletonInjector[T](underlying: Injector[T]) extends Injector[T] {
   @volatile

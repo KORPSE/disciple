@@ -1,6 +1,6 @@
-name := "di"
+name := "disciple"
 
-organization := "io.souce"
+organization := "io.ics"
 
 version := "1.0"
 
@@ -15,3 +15,5 @@ managedSourceDirectories in Compile += baseDirectory.value / "src_managed"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 
 scalacOptions in ThisBuild ++= Seq("-feature")
+
+bintrayVcsUrl := Some("git@github.com:KORPSE/disciple.git")

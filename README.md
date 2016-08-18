@@ -1,13 +1,14 @@
 <snippet>
   <content>
-# Souce
+# DIsciple
 
-Souce is a small dependency injection library for Scala inspired by Guice and Scaldi on pure Scala without macro and reflection (actually using ClassTag)
-The main feature is early determining cycle references and lack of bindings.
+DIsciple is a small dependency injection library for Scala inspired by Guice and Scaldi on pure no-dep Scala without
+macro and reflection (actually using ClassTag). The main feature is early determining cycle references
+and graph incompleteness.
 
 ## Installation
 
-TODO: Publish to maven
+TODO: Publish to sonatype
 
 ## Usage
 
@@ -20,13 +21,15 @@ TODO: Publish to maven
 5. Use ```binding[T]``` or ```binding[T]('Id)``` to get instance
 
 ```scala
+import io.ics.disciple.Module
+
 case class User(name: String)
 
 class UserService(val admin: User) {
   def getUser(name: String) = User(name)
 }
 
-// Notice: Souce requires binding as a constructor function, so Factory methods are not required, but it allows to use]
+// Notice: DIsciple requires binding as a constructor function, so Factory methods are not required, but it allows to use]
 // more compact form
 object UserService {
   def getInstance(admin: User) = new UserService(admin)
@@ -94,12 +97,11 @@ val a = binding[A]('a) // calls binding called 'a of type A
 
 ```scala
 val binding = Module().
-bind(System.currentTimeMillis()).
-bind(A).singleton.
-build()
+  bind(System.currentTimeMillis()).
+  bind(A).singleton.
+  build()
 
-binding[A] // - every time exactly the same instance would be returned
-
+val a = binding[A] // - every time exactly the same instance would be returned
 ```
 
 ## Contributing
@@ -110,6 +112,6 @@ binding[A] // - every time exactly the same instance would be returned
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-</content>
-  <tabTrigger>readme</tabTrigger>
-</snippet>
+## License
+
+**DIsciple** is licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

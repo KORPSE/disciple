@@ -1,6 +1,6 @@
-package io.ics.souce.injector
+package io.ics.disciple.injector
 
-import io.ics.souce.dep._
+import io.ics.disciple.dep._
 
 import scala.reflect.ClassTag
 

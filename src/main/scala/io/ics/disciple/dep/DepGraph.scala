@@ -1,7 +1,7 @@
-package io.k0rp53.disciple.dep
+package io.ics.disciple.dep
 
-import io.k0rp53.disciple.injector.Injector
-import io.k0rp53.disciple.util.Util._
+import io.ics.disciple.injector.Injector
+import io.ics.disciple.util.Util._
 
 import scala.collection.immutable.ListSet
 import scala.reflect.ClassTag
