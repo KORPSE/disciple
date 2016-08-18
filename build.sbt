@@ -17,3 +17,5 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 scalacOptions in ThisBuild ++= Seq("-feature")
 
 bintrayVcsUrl := Some("git@github.com:KORPSE/disciple.git")
+
+licenses += ("Apache-2.0", url("https://opensource.org/licenses/apache-2.0"))

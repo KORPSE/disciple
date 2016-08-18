@@ -8,7 +8,7 @@ and graph incompleteness.
 
 ## Installation
 
-TODO: Publish to sonatype
+libraryDependencies += "io.ics" %% "disciple" % "1.0"
 
 ## Usage
 
@@ -103,6 +103,8 @@ val binding = Module().
 
 val a = binding[A] // - every time exactly the same instance would be returned
 ```
+
+### [For more examples please look at tests](https://github.com/KORPSE/disciple/tree/master/src/test/scala/io/ics)
 
 ## Contributing
 
