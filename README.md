@@ -8,7 +8,7 @@ and graph incompleteness.
 
 ## Installation
 
-libraryDependencies += "io.ics" %% "disciple" % "1.0"
+```libraryDependencies += "io.ics" %% "disciple" % "1.0"```
 
 ## Usage
 
