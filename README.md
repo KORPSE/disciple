@@ -70,7 +70,7 @@ println(binding[UserController].renderUser("George")) // controller has it's dep
 ### Features
 
 #### Lazy dependency binding
-Default all bindings are lazy
+By default all bindings are lazy
 
 #### Binding by name
 ```scala
