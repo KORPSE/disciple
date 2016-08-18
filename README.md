@@ -8,7 +8,11 @@ and graph incompleteness.
 
 ## Installation
 
-```libraryDependencies += "io.ics" %% "disciple" % "1.0"```
+```scala
+resolvers += Resolver.bintrayRepo("korpse", "maven")
+
+libraryDependencies += "io.ics" %% "disciple" % "1.0"
+```
 
 ## Usage
 
