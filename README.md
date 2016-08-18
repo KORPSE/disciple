@@ -97,7 +97,7 @@ val binding = Module().
 val a = binding[A]('a) // calls binding called 'a of type A
 ```
 
-### Singleton component
+#### Singleton component
 
 ```scala
 val binding = Module().
@@ -108,7 +108,7 @@ val binding = Module().
 val a = binding[A] // - every time exactly the same instance would be returned
 ```
 
-### [For more examples please look at tests](https://github.com/KORPSE/disciple/tree/master/src/test/scala/io/ics)
+#### [For more examples please look at tests](https://github.com/KORPSE/disciple/tree/master/src/test/scala/io/ics)
 
 ## Contributing
 
