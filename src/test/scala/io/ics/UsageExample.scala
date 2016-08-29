@@ -61,7 +61,11 @@ class UsageExample extends FlatSpec with Matchers {
 
     // Notice: Factory methods are not required, but it allows to use more compact form to pass constructor as a function
     object UserService {
-      def getInstance(admin: User) = new UserService(admin)
+      var isCreated: Boolean = false
+      def getInstance(admin: User) = {
+        isCreated = true
+        new UserService(admin)
+      }
     }
 
     class UserController(service: UserService) {
@@ -75,16 +79,14 @@ class UsageExample extends FlatSpec with Matchers {
       def getInstance(service: UserService) = new UserController(service)
     }
 
-    object Bindings {
-      val binding = Module().
-        bind(UserController.getInstance _).singleton.
-        bindNamed(Some('admin))(UserService.getInstance _).singleton.
-        bind(User("Admin")).byName('admin).
-        bind(User("Jack")).byName('customer).
-        build()
-    }
+    val binding = Module().
+      bind(UserController.getInstance _).singleton.
+      bindNamed(Some('admin))(UserService.getInstance).singleton.nonLazy.
+      bind(User("Admin")).byName('admin).
+      bind(User("Jack")).byName('customer).
+      build()
 
-    import Bindings._
+    assert(UserService.isCreated) // nonlazy binding creates just after building the graph
 
     println(binding[User]('customer)) // user with id 'customer' is Jack
     println(binding[UserService].admin) // service's admin is User(Admin)

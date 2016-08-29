@@ -27,7 +27,7 @@ case class DepGraph private (map: Map[DepId[_], Dep[_]]) {
       case _ => None
     }
 
-  private def getResult[R](id: DepId[R]): R = {
+  private[disciple] def getResult[R](id: DepId[R]): R = {
     map.get(id) match {
       case Some(Dep(injector: Injector[_], depIds)) =>
         injector(depIds, this).asInstanceOf[R]

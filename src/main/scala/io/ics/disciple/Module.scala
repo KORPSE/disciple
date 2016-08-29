@@ -4,29 +4,45 @@ import io.ics.disciple.dep._
 import io.ics.disciple.injector.SingletonInjector
 import io.ics.disciple.module._
 
-case class Module(protected val deps: List[(DepId[_], Dep[_])]) extends BindBoilerplate with BindNamedBoilerplate {
+case class Module(protected val deps: List[(DepId[_], Dep[_])],
+                  protected val nonLazyIds: List[DepId[_]] = Nil) extends BindBoilerplate with BindNamedBoilerplate {
 
   def byName(name: Symbol) = {
     deps match {
       case (CTId(ct), dep: Dep[_]) :: tail =>
-        Module((NamedId(name, ct), dep) :: tail)
+        copy((NamedId(name, ct), dep) :: tail)
       case _ =>
-        throw new IllegalStateException("Last dependency already has name or module is empty")
+        throw new IllegalStateException("Last bound dependency already has name or module is empty")
     }
   }
 
   def singleton = {
     deps match {
       case (id: DepId[_], Dep(injector, depCts)) :: tail =>
-        Module(id -> Dep(SingletonInjector(injector), depCts) :: tail)
+        copy(id -> Dep(SingletonInjector(injector), depCts) :: tail)
       case _ =>
-        throw new IllegalStateException("Last dependency can't be singleton")
+        throw new IllegalStateException("Last bound dependency can't be singleton")
     }
   }
 
-  def combine(module: Module) = Module(deps ++ module.deps)
+  def nonLazy = {
+    deps match {
+      case (id: DepId[_], Dep(_: SingletonInjector[_], _)) :: tail =>
+        Module(deps, id :: nonLazyIds)
+      case _ =>
+        throw new IllegalStateException("Only singleton dependency might be non-lazy")
+    }
+  }
 
-  def build() = DepGraph(deps.toMap)
+  def combine(module: Module) = Module(deps ++ module.deps, nonLazyIds ++ module.nonLazyIds)
+
+  def build() = {
+    val binding = DepGraph(deps.toMap)
+    nonLazyIds foreach { id =>
+      binding.getResult(id)
+    }
+    binding
+  }
 
 
 }

@@ -66,10 +66,10 @@ class InjectionTest extends WordSpec with Matchers {
         }
 
         val depGraph = Module().
-          bind(new Singleton(_: A)).singleton.
+          bind(new Singleton(_)).singleton.
           bind(A("test")).
-          bind(new Dependent(_: Singleton)).byName('dependent1).
-          bind(new Dependent(_: Singleton)).byName('dependent2).
+          bind(new Dependent[Singleton](_)).byName('dependent1).
+          bind(new Dependent[Singleton](_)).byName('dependent2).
           build()
 
         val (d1, d2) = (depGraph[Dependent[Singleton]]('dependent1), depGraph[Dependent[Singleton]]('dependent2))
