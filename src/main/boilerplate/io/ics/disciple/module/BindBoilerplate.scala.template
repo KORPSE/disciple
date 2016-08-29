@@ -1,7 +1,5 @@
 package io.ics.disciple.module
 
-import scala.reflect.ClassTag
-
 import io.ics.disciple.Module
 
 import io.ics.disciple.dep._

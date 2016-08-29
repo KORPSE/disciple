@@ -115,7 +115,7 @@ class InjectionTest extends WordSpec with Matchers {
       }
 
       println(caught.getMessage)
-      caught.getMessage shouldBe "Dependency graph contains cyclic dependency: ( {Class[io.ics.TestClasses$DepCycle]} <- {Class[io.ics.TestClasses$Dep2]} <- {Class[io.ics.TestClasses$Dep1]} <- {Class[io.ics.TestClasses$DepCycle]} )"
+      caught.getMessage shouldBe "Dependency graph contains cyclic dependency: ( {Class[io.ics.TestClasses$DepCycle]} -> {Class[io.ics.TestClasses$Dep1]} -> {Class[io.ics.TestClasses$Dep2]} -> {Class[io.ics.TestClasses$DepCycle]} )"
     }
 
     "Throw an exception on building graph on empty module" in {

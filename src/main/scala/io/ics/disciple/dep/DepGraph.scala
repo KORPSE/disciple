@@ -6,7 +6,7 @@ import io.ics.disciple.util.Util._
 import scala.collection.immutable.ListSet
 import scala.reflect.ClassTag
 
-case class DepGraph (map: Map[DepId[_], Dep[_]]) {
+case class DepGraph private (map: Map[DepId[_], Dep[_]]) {
   override def toString = map.toString()
 
   def apply[R: ClassTag]: R = getResult(CTId(classTag[R]))
@@ -39,7 +39,7 @@ case class DepGraph (map: Map[DepId[_], Dep[_]]) {
   //test dep graph for correctness
   if (map.nonEmpty) {
     findCycleDfs(ListSet.empty, map.keys.toList) foreach {
-      depList => throw new IllegalStateException(s"Dependency graph contains cyclic dependency: ( ${depList.mkString(" <- ")} )")
+      depList => throw new IllegalStateException(s"Dependency graph contains cyclic dependency: ( ${depList.reverse.mkString(" -> ")} )")
     }
   } else {
     throw new IllegalStateException(s"Module is empty")
