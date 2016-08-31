@@ -2,12 +2,12 @@ package io.ics.disciple.injector
 
 import io.ics.disciple.dep._
 
-import scala.reflect.ClassTag
+import io.ics.disciple.util.Util._
 
 trait Injector[T] {
-  def apply(depIds: List[DepId[_]], cm: DepGraph): T
-  protected def dep[P: ClassTag](id: DepId[P], cm: DepGraph): P = id match {
-    case CTId(ct: ClassTag[P]) => cm[P]
-    case NamedId(name, ct: ClassTag[P]) => cm[P](name)
+  def apply(depIds: List[DepId], cm: DepGraph): T
+  protected def dep[P: TT](id: DepId, cm: DepGraph): P = id match {
+    case TTId(_)          => cm[P]
+    case NamedId(name, _) => cm[P](name)
   }
 }

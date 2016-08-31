@@ -2,7 +2,7 @@ name := "disciple"
 
 organization := "io.ics"
 
-version := "1.0"
+version := "1.1"
 
 scalaVersion := "2.11.8"
 
@@ -12,7 +12,10 @@ sourceManaged in Compile := baseDirectory.value / "src_managed"
 
 managedSourceDirectories in Compile += baseDirectory.value / "src_managed"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test",
+  "org.scala-lang" % "scala-reflect" % "2.11.8"
+)
 
 scalacOptions in ThisBuild ++= Seq("-feature")
 

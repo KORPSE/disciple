@@ -1,20 +1,20 @@
 package io.ics.disciple.dep
 
 import io.ics.disciple.injector.Injector
+
 import io.ics.disciple.util.Util._
 
 import scala.collection.immutable.ListSet
-import scala.reflect.ClassTag
 
-case class DepGraph private (map: Map[DepId[_], Dep[_]]) {
+case class DepGraph private (map: Map[DepId, Dep[_]]) {
   override def toString = map.toString()
 
-  def apply[R: ClassTag]: R = getResult(CTId(classTag[R]))
-  def apply[R: ClassTag](name: Symbol): R = getResult(NamedId(name, classTag[R]))
+  def apply[R: TT]: R = getResult(TTId(typeOf[R])).asInstanceOf[R]
+  def apply[R: TT](name: Symbol): R = getResult(NamedId(name, typeOf[R])).asInstanceOf[R]
 
-  private def findCycleDfs(visited: ListSet[DepId[_]], cts: List[DepId[_]]): Option[List[DepId[_]]] =
-    cts match {
-      case (id: DepId[_]) :: tail =>
+  private def findCycleDfs(visited: ListSet[DepId], depIds: List[DepId]): Option[List[DepId]] =
+    depIds match {
+      case (id: DepId) :: tail =>
         if (visited contains id) Some(id :: visited.toList)
         else {
           map.get(id) match {
@@ -27,10 +27,10 @@ case class DepGraph private (map: Map[DepId[_], Dep[_]]) {
       case _ => None
     }
 
-  private[disciple] def getResult[R](id: DepId[R]): R = {
+  private[disciple] def getResult(id: DepId): Any = {
     map.get(id) match {
       case Some(Dep(injector: Injector[_], depIds)) =>
-        injector(depIds, this).asInstanceOf[R]
+        injector(depIds, this)
       case _ =>
         throw new IllegalStateException(s"Not found binding for $id")
     }

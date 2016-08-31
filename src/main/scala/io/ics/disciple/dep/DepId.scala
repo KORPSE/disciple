@@ -1,13 +1,13 @@
 package io.ics.disciple.dep
 
-import scala.reflect.ClassTag
+import io.ics.disciple.util.Util._
 
-sealed trait DepId[T]
+sealed trait DepId
 
-case class CTId[T](ct: ClassTag[T]) extends DepId[T] {
-  override def toString: String = s"{Class[$ct]}"
+case class TTId(tpe: Type) extends DepId {
+  override def toString: String = s"{Type[$tpe]}"
 }
 
-case class NamedId[T](name: Symbol, ct: ClassTag[T]) extends DepId[T] {
-  override def toString: String = s"{Name[${name.name}], Class[$ct]}"
+case class NamedId(name: Symbol, tpe: Type) extends DepId {
+  override def toString: String = s"{Name[${name.name}], Type[$tpe]}"
 }

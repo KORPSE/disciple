@@ -11,8 +11,8 @@ import io.ics.disciple.injector._
 trait BindBoilerplate {
   this: Module =>
 
-  def bind[T: CT](f: => T) = copy(CTId(classTag[T]) -> Dep(Injector0(f _), Nil) :: deps)
-  def bind[T: CT, P1: CT](f: P1 => T) = copy(CTId(classTag[T]) -> Dep(Injector1(f), CTId(classTag[P1]) :: Nil) :: deps)
-  [1..21#def bind[T: CT, P##1: CT, [#P2: CT#]](f: (P##1, [#P2#]) => T) = copy(CTId(classTag[T]) -> Dep(Injector2(f), CTId(classTag[P##1]) :: [#CTId(classTag[P2])# :: ] :: Nil) :: deps)#
+  def bind[T: TT](f: => T) = copy(TTId(typeOf[T]) -> Dep(Injector0(f _), Nil) :: deps)
+  def bind[T: TT, P1: TT](f: P1 => T) = copy(TTId(typeOf[T]) -> Dep(Injector1(f), TTId(typeOf[P1]) :: Nil) :: deps)
+  [1..21#def bind[T: TT, P##1: TT, [#P2: TT#]](f: (P##1, [#P2#]) => T) = copy(TTId(typeOf[T]) -> Dep(Injector2(f), TTId(typeOf[P##1]) :: [#TTId(typeOf[P2])# :: ] :: Nil) :: deps)#
   ]
 }

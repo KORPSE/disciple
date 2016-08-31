@@ -5,20 +5,20 @@ import io.ics.disciple.dep._
 case class SingletonInjector[T](underlying: Injector[T]) extends Injector[T] {
   @volatile
   private var value: Option[T] = None
-  def apply(depIds: List[DepId[_]], cm: DepGraph): T =
+  def apply(depIds: List[DepId], cm: DepGraph): T =
     value match {
-      case None    =>
+      case None =>
         value synchronized {
           value match {
-            case None    =>
-              val r = underlying(depIds, cm)
-              value = Some(r)
-              r
-            case Some(v) =>
-              v
+            case None =>
+              val instance = underlying(depIds, cm)
+              value = Some(instance)
+              instance
+            case Some(existing) =>
+              existing
           }
         }
-      case Some(v) =>
-        v
+      case Some(existing) =>
+        existing
     }
 }

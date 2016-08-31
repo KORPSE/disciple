@@ -1,27 +1,29 @@
-<snippet>
-  <content>
 # DIsciple
 
-DIsciple is a small dependency injection library for Scala inspired by Guice and Scaldi on pure no-dep Scala without
-macro and reflection (actually using ClassTag). The main feature is early determining cycle references
-and graph incompleteness.
+DIsciple is a small dependency injection library for Scala inspired by Guice and Scaldi on pure Scala without
+any external dependencies.
+
+The key feature of DIsciple is early determining cycle references and graph incompleteness.
+
+DIsciple implements dependency injection via constructor arguments injection, but allows you to use any function returning target object
+as a constructor.
 
 ## Installation
 
 Add next to build.sbt
 ```scala
-libraryDependencies += "io.ics" %% "disciple" % "1.0"
+libraryDependencies += "io.ics" %% "disciple" % "1.1"
 ```
 
 ## Usage
 
 ### Getting started
 
-1. Pass constructor functions to ```binding``` function
+1. Pass constructor functions to ```bind``` function or ```bindNamed``` to wire components by its names
 2. Combine multiple modules with Module().combine
-3. Call build
+3. Module.build will return you a ```DependencyGraph```, which you would be able to use to get an actual instances of your components
 4. If there's a cyclic dependency, or lack of some component, an ```IllegalStateException``` would be thrown
-5. Use ```binding[T]``` or ```binding[T]('Id)``` to get instance
+5. Use ```dependencyGraph[T]``` or ```dependencyGraph[T]('Id)``` to get an instance
 
 ```scala
 import io.ics.disciple.Module
@@ -32,10 +34,14 @@ class UserService(val admin: User) {
   def getUser(name: String) = User(name)
 }
 
-// Notice: DIsciple requires binding as a constructor function, so Factory methods are not required, but it allows to use]
-// more compact form
+// Notice: DIsciple requires binding as a constructor function, so factory-methods is the most
+// comfortable way to pass constructor as function
 object UserService {
-  def getInstance(admin: User) = new UserService(admin)
+  var isCreated: Boolean = false
+  def getInstance(admin: User) = {
+    isCreated = true
+    new UserService(admin)
+  }
 }
 
 class UserController(service: UserService) {
@@ -49,27 +55,45 @@ object UserController {
   def getInstance(service: UserService) = new UserController(service)
 }
 
-object Bindings {
-  val binding = Module().
-    bind(UserController.getInstance _).singleton.
-    bindNamed(Some('admin))(UserService.getInstance _).singleton.
-    bind(User("Admin")).byName('admin).
-    bind(User("Jack")).byName('customer).
-    build()
-}
+val binding = Module().
+  bind(UserController.getInstance _).singleton.
+  bindNamed(Some('admin))(UserService.getInstance).singleton.nonLazy.
+  bind(User("Admin")).byName('admin).
+  bind(User("Jack")).byName('customer).
+  build()
 
-import Bindings._
+  assert(UserService.isCreated) // nonlazy binding creates just after building the graph
 
-println(binding[User]('customer)) // user with id 'customer' is Jack
-println(binding[UserService].admin) // service's admin is User(Admin)
-println(binding[UserController].renderUser("George")) // controller has it's dependency
+  println(binding[User]('customer)) // user with id 'customer' is Jack
+  println(binding[UserService].admin) // service's admin is User(Admin)
+  println(binding[UserController].renderUser("George")) // controller has it's dependency
 
 ```
 
 ### Features
 
+#### Singleton component
+
+```scala
+val binding = Module().
+  bind(System.currentTimeMillis()).
+  bind(A).singleton.
+  build()
+
+val a = binding[A] // - every time exactly the same instance would be returned
+```
+
 #### Lazy dependency binding
 By default all bindings are lazy
+
+#### Non-lazy dependency binding
+You can mark your component binding as non-lazy to force its creation on module build.
+Notice: component should be marked as singleton
+```scala
+  Module().
+    bind(Service.getInstance).singleton.nonLazy.
+    build()
+```
 
 #### Binding by name
 ```scala
@@ -95,19 +119,26 @@ val binding = Module().
 
 val a = binding[A]('a) // calls binding called 'a of type A
 ```
+* To wire component by name place ```.byName('name)``` after it.
+* To get component which was wired by name, call ```dependencyGraph[T]('name)```
+* To wire another component as dependent from named component use ```bindNamed(...)``` with arguments ```Some('name)```
+if parameter should be wired by name or None if it should be wired by type
 
-#### Singleton component
-
+#### Polymorphic dependencies
+By default, component would be bound to a type of its constructor function result.
+But often we want to bind it to it's supertype. To achieve this you should explicitly specify constructor function result type:
 ```scala
-val binding = Module().
-  bind(System.currentTimeMillis()).
-  bind(A).singleton.
-  build()
+trait Service
 
-val a = binding[A] // - every time exactly the same instance would be returned
+class ServiceImpl extends Service
+
+val binding =
+  Module().
+    bind(new ServiceImpl(): Service).
+    build()
 ```
 
-#### [For more examples please look at tests](https://github.com/KORPSE/disciple/tree/master/src/test/scala/io/ics)
+### [For more examples please take a look at tests](https://github.com/KORPSE/disciple/tree/master/src/test/scala/io/ics/disciple)
 
 ## Contributing
 

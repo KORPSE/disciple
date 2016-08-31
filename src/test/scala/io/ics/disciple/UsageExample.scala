@@ -1,27 +1,54 @@
-package io.ics
+package io.ics.disciple
 
-import io.ics.disciple.Module
 import org.scalatest._
-class UsageExample extends FlatSpec with Matchers {
 
-  case class Car(mark: String, model: String, dirty: Boolean)
-  case class Driver(info: DriverInfo, car: Car)
-  case class DriverInfo(name: String)
-  class CarShop(car: Car) {
-    def buy = car
+case class Car(mark: String, model: String, dirty: Boolean)
+case class Driver(info: DriverInfo, car: Car)
+case class DriverInfo(name: String)
+class CarShop(car: Car) {
+  def buy = car
+}
+class CarWash {
+  def wash(car: Car) = car.copy(dirty = false)
+}
+class CarServices(carShop: CarShop, carWash: CarWash) {
+  def getNewWashedCar = {
+    val car = carShop.buy
+    carWash.wash(car)
   }
-  class CarWash {
-    def wash(car: Car) = car.copy(dirty = false)
+}
+object CarServices {
+  def apply(carShop: CarShop, carWash: CarWash): CarServices = new CarServices(carShop, carWash)
+}
+
+case class User(name: String)
+
+class UserService(val admin: User) {
+  def getUser(name: String) = User(name)
+}
+
+// Notice: Factory methods are not required, but it allows to use more compact form to pass constructor as a function
+object UserService {
+  var isCreated: Boolean = false
+  def getInstance(admin: User) = {
+    isCreated = true
+    new UserService(admin)
   }
-  class CarServices(carShop: CarShop, carWash: CarWash) {
-    def getNewWashedCar = {
-      val car = carShop.buy
-      carWash.wash(car)
-    }
+}
+
+class UserController(service: UserService) {
+  def renderUser(name: String): String = {
+    val user = service.getUser(name)
+    s"User is $user"
   }
-  object CarServices {
-    def apply(carShop: CarShop, carWash: CarWash): CarServices = new CarServices(carShop, carWash)
-  }
+}
+
+object UserController {
+  def getInstance(service: UserService) = new UserController(service)
+}
+
+
+class UsageExample extends FlatSpec with Matchers {
 
   "Usage example" should "show typical usecase" in {
 
@@ -53,32 +80,6 @@ class UsageExample extends FlatSpec with Matchers {
   }
 
   "Example from README.md" should "works correctly" in {
-    case class User(name: String)
-
-    class UserService(val admin: User) {
-      def getUser(name: String) = User(name)
-    }
-
-    // Notice: Factory methods are not required, but it allows to use more compact form to pass constructor as a function
-    object UserService {
-      var isCreated: Boolean = false
-      def getInstance(admin: User) = {
-        isCreated = true
-        new UserService(admin)
-      }
-    }
-
-    class UserController(service: UserService) {
-      def renderUser(name: String): String = {
-        val user = service.getUser(name)
-        s"User is $user"
-      }
-    }
-
-    object UserController {
-      def getInstance(service: UserService) = new UserController(service)
-    }
-
     val binding = Module().
       bind(UserController.getInstance _).singleton.
       bindNamed(Some('admin))(UserService.getInstance).singleton.nonLazy.

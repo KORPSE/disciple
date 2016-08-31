@@ -2,14 +2,20 @@ package io.ics.disciple.util
 
 import io.ics.disciple.dep._
 
-import scala.reflect.ClassTag
+import scala.reflect.runtime.universe
 
 object Util {
-  def classTag[T: ClassTag] = implicitly[ClassTag[T]]
-  def getId[P: ClassTag](name: Option[Symbol]) = name match {
-    case Some(n) => NamedId(n, classTag[P])
-    case None    => CTId(classTag[P])
+  type TT[T] = universe.TypeTag[T]
+  type Type = universe.Type
+
+  def typeOf[T : TT]: Type = {
+    val r = universe.typeOf[T]
+    if (r =:= universe.typeOf[String]) universe.typeOf[String]
+    else r
   }
 
-  type CT[T] = ClassTag[T]
+  def getId[P: TT](name: Option[Symbol]) = name match {
+    case Some(n) => NamedId(n, this.typeOf[P])
+    case None    => TTId(this.typeOf[P])
+  }
 }
