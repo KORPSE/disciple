@@ -26,7 +26,7 @@ libraryDependencies += "io.ics" %% "disciple" % "1.1"
 5. Use ```dependencyGraph[T]``` or ```dependencyGraph[T]('Id)``` to get an instance
 
 ```scala
-import io.ics.disciple.Module
+import io.ics.disciple._
 
 case class User(name: String)
 
@@ -57,7 +57,7 @@ object UserController {
 
 val binding = Module().
   bind(UserController.getInstance _).singleton.
-  bindNamed(Some('admin))(UserService.getInstance).singleton.nonLazy.
+  forNames('admin).bind(UserService.getInstance).singleton.nonLazy.
   bind(User("Admin")).byName('admin).
   bind(User("Jack")).byName('customer).
   build()
@@ -113,16 +113,16 @@ case class C(a: A, b: B)
 val binding = Module().
   bind(A()).byName('a).
   bind(A()).byName('anotherA).
-  bindNamed(Some('a))(B).
-  bindNamed(Some('anotherA), None)(C). // Use this if you want some args binded by name and others by type
+  forNames('a).bind(B).
+  forNames('anotherA, *).bind(C). // Use this if you want some args bound by name and others by type
   build()
 
 val a = binding[A]('a) // calls binding called 'a of type A
 ```
 * To wire component by name place ```.byName('name)``` after it.
 * To get component which was wired by name, call ```dependencyGraph[T]('name)```
-* To wire another component as dependent from named component use ```bindNamed(...)``` with arguments ```Some('name)```
-if parameter should be wired by name or None if it should be wired by type
+* To wire another component as dependent from named component use ```bindNamed(...)``` with arguments ```'name```
+if parameter should be wired by name or ```*``` it should be wired by type
 
 #### Polymorphic dependencies
 By default, component would be bound to a type of its constructor function result.

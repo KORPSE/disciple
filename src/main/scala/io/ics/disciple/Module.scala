@@ -4,13 +4,13 @@ import io.ics.disciple.dep._
 import io.ics.disciple.injector.SingletonInjector
 import io.ics.disciple.module._
 
-case class Module(protected val deps: List[(DepId, Dep[_])],
-                  protected val nonLazyIds: List[DepId] = Nil) extends BindBoilerplate with BindNamedBoilerplate {
+case class Module(deps: List[(DepId, Dep[_])],
+                  nonLazyIds: List[DepId] = Nil) extends BindBoilerplate with BindNamedBoilerplate {
 
   def byName(name: Symbol) = {
     deps match {
-      case (TTId(ct), dep: Dep[_]) :: tail =>
-        copy((NamedId(name, ct), dep) :: tail)
+      case (TTId(tt), dep: Dep[_]) :: tail =>
+        copy((NamedId(name, tt), dep) :: tail)
       case _                               =>
         throw new IllegalStateException("Last bound dependency already has name or module is empty")
     }
@@ -18,8 +18,8 @@ case class Module(protected val deps: List[(DepId, Dep[_])],
 
   def singleton = {
     deps match {
-      case (id: DepId, Dep(injector, depCts)) :: tail =>
-        copy(id -> Dep(SingletonInjector(injector), depCts) :: tail)
+      case (id: DepId, Dep(injector, depIds)) :: tail =>
+        copy(id -> Dep(SingletonInjector(injector), depIds) :: tail)
       case _ =>
         throw new IllegalStateException("Last bound dependency can't be singleton")
     }
@@ -46,6 +46,7 @@ case class Module(protected val deps: List[(DepId, Dep[_])],
 
 
 }
+
 object Module {
   def apply(): Module = Module(Nil)
 }

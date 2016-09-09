@@ -1,19 +1,15 @@
 package io.ics.disciple.module
 
-import io.ics.disciple.Module
+import io.ics.disciple._
 
-import io.ics.disciple.dep._
-
-import io.ics.disciple.util.Util._
-
-import io.ics.disciple.injector._
+import io.ics.disciple.labels._
 
 trait BindNamedBoilerplate {
-  protected def deps: List[(DepId, Dep[_])]
+  this: Module =>
 
-  def bindNamed[T: TT, P1: TT](name1: Option[Symbol])(f: P1 => T) =
-    Module(TTId(typeOf[T]) -> Dep(Injector1(f), getId[P1](name1) :: Nil) :: deps)
-  [1..21#def bindNamed[T: TT, P##1: TT, [#P2: TT#]](name##1: Option[Symbol], [#name2: Option[Symbol]#])(f: (P##1, [#P2#]) => T) =
-    Module(TTId(typeOf[T]) -> Dep(Injector2(f), getId[P##1](name##1) :: [#getId[P2](name2)# :: ] :: Nil) :: deps)#
+  private type L = PossibleLabel
+
+  def forNames(label1: L) = new NamesWord1(label1)(this)
+  [1..21#def names(label##1: L, [#label2: L#]) = new NamesWord2(label##1, [#label2#])(this)#
   ]
 }

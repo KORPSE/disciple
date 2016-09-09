@@ -3,20 +3,26 @@ package io.ics.disciple
 import org.scalatest._
 
 case class Car(mark: String, model: String, dirty: Boolean)
+
 case class Driver(info: DriverInfo, car: Car)
+
 case class DriverInfo(name: String)
+
 class CarShop(car: Car) {
   def buy = car
 }
+
 class CarWash {
   def wash(car: Car) = car.copy(dirty = false)
 }
+
 class CarServices(carShop: CarShop, carWash: CarWash) {
   def getNewWashedCar = {
     val car = carShop.buy
     carWash.wash(car)
   }
 }
+
 object CarServices {
   def apply(carShop: CarShop, carWash: CarWash): CarServices = new CarServices(carShop, carWash)
 }
@@ -47,7 +53,6 @@ object UserController {
   def getInstance(service: UserService) = new UserController(service)
 }
 
-
 class UsageExample extends FlatSpec with Matchers {
 
   "Usage example" should "show typical usecase" in {
@@ -59,7 +64,7 @@ class UsageExample extends FlatSpec with Matchers {
         bind(CarServices.apply _).singleton
 
       private val driverModule = Module().
-        bindNamed(Some('jackInfo), None)(Driver).byName('Jack).singleton.
+        names('jackInfo, *).bind(Driver).byName('Jack).singleton.
         bind(DriverInfo("Jack")).byName('jackInfo)
 
       private val carModule = Module().
@@ -82,7 +87,7 @@ class UsageExample extends FlatSpec with Matchers {
   "Example from README.md" should "works correctly" in {
     val binding = Module().
       bind(UserController.getInstance _).singleton.
-      bindNamed(Some('admin))(UserService.getInstance).singleton.nonLazy.
+      forNames('admin).bind(UserService.getInstance).singleton.nonLazy.
       bind(User("Admin")).byName('admin).
       bind(User("Jack")).byName('customer).
       build()

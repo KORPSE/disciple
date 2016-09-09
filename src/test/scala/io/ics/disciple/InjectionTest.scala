@@ -21,13 +21,13 @@ class InjectionTest extends WordSpec with Matchers {
 
       "wire by name" in {
         val depGraph = Module().
-          bindNamed(Some('labelA)) {
+          forNames('labelA).bind {
             A
           }.
-          bindNamed(None, Some('labelB)) {
+          names(*, 'labelB).bind {
             B
           }.
-          bindNamed(None, None, Some('labelC)) {
+          names(*, *, 'labelC).bind {
             C
           }.
           bind("instanceA").byName('labelA).
@@ -40,6 +40,7 @@ class InjectionTest extends WordSpec with Matchers {
       }
 
       "singleton creates exactly ones" in {
+        Singleton.singletonCounter = 0
         val depGraph = Module().
           bind(new Singleton(_)).singleton.
           bind(A("test")).
@@ -49,7 +50,22 @@ class InjectionTest extends WordSpec with Matchers {
 
         val (d1, d2) = (depGraph[Dependent[Singleton]]('dependent1), depGraph[Dependent[Singleton]]('dependent2))
 
-        println(depGraph)
+        Singleton.singletonCounter shouldBe 1
+        //check that d1 and d2 links to the same object
+        d1.t.dt shouldBe d2.t.dt
+      }
+
+      "singleton injected by name creates exactly ones" in {
+        Singleton.singletonCounter = 0
+        val depGraph = Module().
+          bind(new Singleton(_)).byName('singleton).singleton.
+          bind(A("test")).
+          forNames('singleton).bind(new Dependent[Singleton](_: Singleton)).byName('dependent1).
+          forNames('singleton).bind(new Dependent[Singleton](_: Singleton)).byName('dependent2).
+          build()
+
+        val (d1, d2) = (depGraph[Dependent[Singleton]]('dependent1), depGraph[Dependent[Singleton]]('dependent2))
+
         Singleton.singletonCounter shouldBe 1
         //check that d1 and d2 links to the same object
         d1.t.dt shouldBe d2.t.dt
@@ -69,11 +85,13 @@ class InjectionTest extends WordSpec with Matchers {
       }
 
       "Throws an exception when no dep by name" in {
-        val module = Module().bind {
-          A("instanceA")
-        }.bindNamed(None, Some('labelB)) {
-          C(_: A, _: B, "instanceC")
-        }
+        val module = Module().
+          bind {
+            A("instanceA")
+          }.
+          names(*, 'labelB).bind {
+            C(_: A, _: B, "instanceC")
+          }
 
         val caught = intercept[IllegalStateException](module.build())
         caught.getMessage shouldBe "Not found binding for {Name[labelB], Type[io.ics.disciple.B]}"
