@@ -1,5 +1,4 @@
-# DIsciple
-[![Build Status](https://travis-ci.org/KORPSE/disciple.svg?branch=master)](https://travis-ci.org/KORPSE/disciple)
+# DIsciple [![Build Status](https://travis-ci.org/KORPSE/disciple.svg?branch=master)](https://travis-ci.org/KORPSE/disciple)
 
 DIsciple is a small dependency injection library for Scala inspired by Guice and Scaldi on pure Scala without
 any external dependencies.
@@ -13,7 +12,7 @@ as a constructor.
 
 Add next to build.sbt
 ```scala
-libraryDependencies += "io.ics" %% "disciple" % "1.1"
+libraryDependencies += "io.ics" %% "disciple" % "1.2"
 ```
 
 ## Usage
