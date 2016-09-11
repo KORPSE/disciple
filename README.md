@@ -19,11 +19,12 @@ libraryDependencies += "io.ics" %% "disciple" % "1.2"
 
 ### Getting started
 
-1. Pass constructor functions to ```bind``` function or ```bindNamed``` to wire components by its names
-2. Combine multiple modules with Module().combine
-3. Module.build will return you a ```DependencyGraph```, which you would be able to use to get an actual instances of your components
-4. If there's a cyclic dependency, or lack of some component, an ```IllegalStateException``` would be thrown
-5. Use ```dependencyGraph[T]``` or ```dependencyGraph[T]('Id)``` to get an instance
+1. Pass constructor functions to ```bind``` method to wire components by its names
+2. To wire constructor arguments by names put ```forNames('id1, 'id2, ...)``` before ```bind```
+3. Combine multiple modules with Module().combine
+4. Module.build will return you a ```DependencyGraph```, which you would be able to use to get an actual instances of your components
+5. If there's a cyclic dependency, or lack of some component, an ```IllegalStateException``` would be thrown
+6. Use ```dependencyGraph[T]``` or ```dependencyGraph[T]('Id)``` to get an instance
 
 ```scala
 import io.ics.disciple._
@@ -121,7 +122,7 @@ val a = binding[A]('a) // calls binding called 'a of type A
 ```
 * To wire component by name place ```.byName('name)``` after it.
 * To get component which was wired by name, call ```dependencyGraph[T]('name)```
-* To wire another component as dependent from named component use ```bindNamed(...)``` with arguments ```'name```
+* To wire another component as dependent from named components use ```forNames(...)``` with arguments like ```'name```
 if parameter should be wired by name or ```*``` it should be wired by type
 
 #### Polymorphic dependencies
