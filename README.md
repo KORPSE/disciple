@@ -12,7 +12,7 @@ as a constructor.
 
 Add next to build.sbt
 ```scala
-libraryDependencies += "io.ics" %% "disciple" % "1.2"
+libraryDependencies += "io.ics" %% "disciple" % "1.2.1"
 ```
 
 ## Usage
@@ -63,11 +63,11 @@ val binding = Module().
   bind(User("Jack")).byName('customer).
   build()
 
-  assert(UserService.isCreated) // nonlazy binding creates just after building the graph
+assert(UserService.isCreated) // nonlazy binding creates just after building the graph
 
-  println(binding[User]('customer)) // user with id 'customer' is Jack
-  println(binding[UserService].admin) // service's admin is User(Admin)
-  println(binding[UserController].renderUser("George")) // controller has it's dependency
+println(binding[User]('customer)) // user with id 'customer' is Jack
+println(binding[UserService].admin) // service's admin is User(Admin)
+println(binding[UserController].renderUser("George")) // controller has it's dependency
 
 ```
 
@@ -91,9 +91,9 @@ By default all bindings are lazy
 You can mark your component binding as non-lazy to force its creation on module build.
 Notice: component should be marked as singleton
 ```scala
-  Module().
-    bind(Service.getInstance).singleton.nonLazy.
-    build()
+Module().
+  bind(Service.getInstance).singleton.nonLazy.
+  build()
 ```
 
 #### Binding by name

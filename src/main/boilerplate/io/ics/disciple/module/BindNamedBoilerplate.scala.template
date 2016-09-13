@@ -10,6 +10,6 @@ trait BindNamedBoilerplate {
   private type L = PossibleLabel
 
   def forNames(label1: L) = new NamesWord1(label1)(this)
-  [1..21#def names(label##1: L, [#label2: L#]) = new NamesWord2(label##1, [#label2#])(this)#
+  [1..21#def forNames(label##1: L, [#label2: L#]) = new NamesWord2(label##1, [#label2#])(this)#
   ]
 }

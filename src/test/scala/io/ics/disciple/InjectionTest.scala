@@ -18,18 +18,11 @@ class InjectionTest extends WordSpec with Matchers {
         result shouldBe C(A("instanceA"), B(A("instanceA"), "instanceB"), "instanceC")
       }
 
-
       "wire by name" in {
         val depGraph = Module().
-          forNames('labelA).bind {
-            A
-          }.
-          names(*, 'labelB).bind {
-            B
-          }.
-          names(*, *, 'labelC).bind {
-            C
-          }.
+          forNames('labelA).bind { A }.
+          forNames(*, 'labelB).bind { B }.
+          forNames(*, *, 'labelC).bind { C }.
           bind("instanceA").byName('labelA).
           bind("instanceB").byName('labelB).
           bind("instanceC").byName('labelC).
@@ -89,7 +82,7 @@ class InjectionTest extends WordSpec with Matchers {
           bind {
             A("instanceA")
           }.
-          names(*, 'labelB).bind {
+          forNames(*, 'labelB).bind {
             C(_: A, _: B, "instanceC")
           }
 

@@ -64,7 +64,7 @@ class UsageExample extends FlatSpec with Matchers {
         bind(CarServices.apply _).singleton
 
       private val driverModule = Module().
-        names('jackInfo, *).bind(Driver).byName('Jack).singleton.
+        forNames('jackInfo, *).bind(Driver).byName('Jack).singleton.
         bind(DriverInfo("Jack")).byName('jackInfo)
 
       private val carModule = Module().
